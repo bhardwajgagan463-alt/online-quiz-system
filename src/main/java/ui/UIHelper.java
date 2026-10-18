@@ -76,6 +76,7 @@ public final class UIHelper {
     public static JScrollPane scroll(Component view) {
         JScrollPane sp = new JScrollPane(view);
         sp.setBorder(BorderFactory.createEmptyBorder());
+        sp.setOpaque(false); 
         sp.getViewport().setOpaque(false);
         return sp;
     }
@@ -148,6 +149,12 @@ public final class UIHelper {
             return this;
         }
     }
+        /** Small bold grey label used above form fields. */
+    public static JLabel caption(String text) {
+        return label(text, Theme.font(Font.BOLD, Theme.SIZE_SMALL), () -> Theme.TEXT_MUTED);
+    }
+
+    
 
     public static void styleTable(JTable table) {
         table.setRowHeight(40);

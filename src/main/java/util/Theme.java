@@ -221,6 +221,18 @@ public final class Theme {
         UIManager.put("TableHeader.foreground", res(TEXT));
         UIManager.put("TableHeader.font", new FontUIResource(BODY_BOLD));
         UIManager.put("TableHeader.height", 40);
+                // Tabs (JTabbedPane) and lists
+        UIManager.put("TabbedPane.tabType", "underlined");
+        UIManager.put("TabbedPane.tabHeight", 42);
+        UIManager.put("TabbedPane.tabInsets", new Insets(4, 16, 4, 16));
+        UIManager.put("TabbedPane.background", res(BACKGROUND));
+        UIManager.put("TabbedPane.contentAreaColor", res(BORDER));
+        UIManager.put("TabbedPane.underlineColor", res(PRIMARY));
+        UIManager.put("TabbedPane.selectedForeground",
+                res(dark ? blend(PRIMARY, Color.WHITE, 0.5f) : PRIMARY));
+        UIManager.put("TabbedPane.hoverColor", res(PRIMARY_SOFT));
+        UIManager.put("TabbedPane.focusColor", res(PRIMARY_SOFT));
+        UIManager.put("List.background", res(SURFACE));
 
         if (dark) {
             FlatDarkLaf.setup();

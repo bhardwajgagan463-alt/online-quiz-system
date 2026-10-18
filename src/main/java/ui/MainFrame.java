@@ -5,6 +5,7 @@ import util.Session;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
@@ -41,8 +42,8 @@ public class MainFrame extends JFrame implements ScreenNavigator {
         container.add(registerPanel, REGISTER);
 
         setContentPane(container);
-        setMinimumSize(new Dimension(900, 700));
-        setSize(1100, 740);
+        setMinimumSize(new Dimension(1000, 700));
+        setSize(1200, 760);
         setLocationRelativeTo(null);
         showLogin();
     }
@@ -63,7 +64,9 @@ public class MainFrame extends JFrame implements ScreenNavigator {
     public void onLoginSuccess(User user) {
         Session.setCurrentUser(user);
         removeHome();
-        homeScreen = new HomePlaceholder(user, this);    // step 5/6: dashboards go here
+        homeScreen = user.isAdmin()
+                ? new AdminDashboard(user, this)
+                : new HomePlaceholder(user, this);    
         container.add(homeScreen, HOME);
         cards.show(container, HOME);
     }
