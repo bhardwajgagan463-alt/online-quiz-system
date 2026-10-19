@@ -23,6 +23,7 @@ public class MainFrame extends JFrame implements ScreenNavigator {
     private static final String REGISTER = "register";
     private static final String HOME = "home";
     private static final String QUIZ = "quiz";
+    private static final String RESULT = "result";
 
     private final CardLayout cards = new CardLayout();
     private final JPanel container = new JPanel(cards);
@@ -32,6 +33,7 @@ public class MainFrame extends JFrame implements ScreenNavigator {
 
     private BaseScreen homeScreen;               // dashboard, created after login
     private BaseScreen quizScreen;               // created when a quiz starts
+    private BaseScreen resultScreen;             // created when a quiz is submitted
 
     public MainFrame() {
         super(ScreenNavigator.APP_NAME + " - Online Quiz System");
@@ -81,6 +83,7 @@ public class MainFrame extends JFrame implements ScreenNavigator {
     public void logout() {
         Session.clear();
         removeQuiz();
+        removeResult();
         removeHome();
         showLogin();
     }
@@ -94,6 +97,7 @@ public class MainFrame extends JFrame implements ScreenNavigator {
                 return;
             }
             removeQuiz();
+            removeResult();
             quizScreen = new QuizScreen(quiz, questions, Session.getCurrentUser(), this);
             container.add(quizScreen, QUIZ);
             cards.show(container, QUIZ);
@@ -104,20 +108,16 @@ public class MainFrame extends JFrame implements ScreenNavigator {
 
     @Override
     public void leaveQuiz() {
-        showHome();
+        showHome();                              // also used by the result screen's "Back" button
     }
 
-    /** TEMPORARY: a simple summary box. Step 7 replaces this with the result screen. */
     @Override
     public void onQuizFinished(Quiz quiz, List<Question> questions, int[] answers, Result result) {
-        StringBuffer sb = new StringBuffer();
-        sb.append("Quiz: ").append(quiz.getTitle()).append("\n");
-        sb.append("Score: ").append(result.getScoreText())
-          .append(String.format(" (%.1f%%)", result.getPercentage())).append("\n");
-        sb.append("Result: ").append(result.getStatus()).append("\n");
-        sb.append("Time taken: ").append(result.getTimeTakenText());
-        UIHelper.info(this, sb.toString());
-        showHome();
+        removeQuiz();                            // its removeNotify() stops the timer thread
+        removeResult();
+        resultScreen = new ResultScreen(quiz, questions, answers, result, this);
+        container.add(resultScreen, RESULT);
+        cards.show(container, RESULT);
     }
 
     // ---------------- helpers ----------------
@@ -125,6 +125,7 @@ public class MainFrame extends JFrame implements ScreenNavigator {
     /** Builds a fresh dashboard for the signed-in user (polymorphism: both are BaseScreen). */
     private void showHome() {
         removeQuiz();
+        removeResult();
         removeHome();
         User user = Session.getCurrentUser();
         homeScreen = user.isAdmin()
@@ -143,8 +144,15 @@ public class MainFrame extends JFrame implements ScreenNavigator {
 
     private void removeQuiz() {
         if (quizScreen != null) {
-            container.remove(quizScreen);        // removeNotify() inside QuizScreen stops its timer
+            container.remove(quizScreen);
             quizScreen = null;
+        }
+    }
+
+    private void removeResult() {
+        if (resultScreen != null) {
+            container.remove(resultScreen);
+            resultScreen = null;
         }
     }
 
